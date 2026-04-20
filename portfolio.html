@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A.G Sithira Lakvindu — Video Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f2;
+      --ink: #1a1714;
+      --muted: #7a756e;
+      --accent: #c8a96e;
+      --line: #e0dcd6;
+      --card-bg: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(247,245,242,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── HERO ── */
+    header {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 30%, rgba(200,169,110,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(200,169,110,0.07) 0%, transparent 60%);
+    }
+    .hero-rule {
+      width: 3rem;
+      height: 1px;
+      background: var(--accent);
+      margin-bottom: 1.5rem;
+      animation: grow 1s ease forwards;
+      transform-origin: left;
+    }
+    @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    .hero-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s ease forwards;
+    }
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.5s ease forwards;
+    }
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-bio {
+      max-width: 36rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.7s ease forwards;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 3rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 1.2s ease forwards;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px;
+      height: 3rem;
+      background: var(--muted);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 6rem 3rem; }
+    .section-tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 3rem;
+    }
+
+    /* ── WORK ── */
+    #work { background: var(--bg); }
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .work-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .work-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    }
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #f0ede8;
+      overflow: hidden;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .video-thumb {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: #1a1714;
+      transition: opacity 0.3s;
+    }
+    .play-icon {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      background: rgba(200,169,110,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .video-thumb:hover .play-icon {
+      transform: scale(1.1);
+      background: var(--accent);
+    }
+    .play-icon svg { margin-left: 4px; }
+    .card-body { padding: 1.4rem 1.6rem 1.8rem; }
+    .card-num {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .view-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      padding-bottom: 2px;
+      border-bottom: 1px solid var(--accent);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .view-btn:hover { color: var(--accent); }
+
+    /* ── SKILLS ── */
+    #skills { border-top: 1px solid var(--line); }
+    .skills-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    .skills-col h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      margin-bottom: 1.4rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.72rem;
+    }
+    .skill-item:last-child { border-bottom: none; }
+    .skill-bar {
+      width: 80px; height: 2px;
+      background: var(--line);
+      position: relative;
+    }
+    .skill-bar::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      height: 100%;
+      background: var(--accent);
+      width: var(--w);
+      transition: width 1s ease;
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .contact-inner { max-width: 30rem; }
+    .contact-inner p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .contact-link {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .contact-link:hover { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.8rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      header, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .skills-layout { grid-template-columns: 1fr; gap: 2rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .hero-scroll { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">A.G Sithira Lakvindu</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header>
+    <div class="hero-bg"></div>
+    <div class="hero-rule"></div>
+    <p class="hero-label">Video Editor &amp; Post-Production</p>
+    <h1 class="hero-name">A.G Sithira<br/><em>Lakvindu</em></h1>
+    <p class="hero-bio">
+      I edit videos for YouTube, social media, and promotional content —
+      crafting clean cuts, precise pacing, and visuals that hold attention
+      from the first frame to the last.
+    </p>
+    <span class="hero-scroll">Scroll</span>
+  </header>
+
+  <!-- WORK -->
+  <section id="work">
+    <p class="section-tag">Selected Work</p>
+    <h2 class="section-title">Recent Projects</h2>
+    <div class="work-grid">
+
+      <!-- Card 1 -->
+      <div class="work-card">
+        <div class="video-wrap">
+          <div class="video-thumb" id="thumb1" onclick="loadVideo(1,'1mPWn-SlbqT1fBLCbSCjr3Ql2U2Ng___b')">
+            <div class="play-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="6,3 21,12 6,21"/></svg>
+            </div>
+          </div>
+          <iframe id="iframe1" src="" allowfullscreen style="display:none;"></iframe>
+        </div>
+        <div class="card-body">
+          <p class="card-num">01 —</p>
+          <h3 class="card-title">Colonial</h3>
+          <p class="card-desc">A cinematic piece with intentional pacing and atmospheric cuts that complement the visual tone.</p>
+          <div class="card-tags">
+            <span class="tag">Cinematic</span>
+            <span class="tag">Color Grading</span>
+            <span class="tag">Pacing</span>
+          </div>
+          <a class="view-btn" href="https://drive.google.com/file/d/1mPWn-SlbqT1fBLCbSCjr3Ql2U2Ng___b/view" target="_blank">View on Drive ↗</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="work-card">
+        <div class="video-wrap">
+          <div class="video-thumb" id="thumb2" onclick="loadVideo(2,'1yNs4V2VpoEzMLHaklNHfhTiIrrhQeNu8')">
+            <div class="play-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="6,3 21,12 6,21"/></svg>
+            </div>
+          </div>
+          <iframe id="iframe2" src="" allowfullscreen style="display:none;"></iframe>
+        </div>
+        <div class="card-body">
+          <p class="card-num">02 —</p>
+          <h3 class="card-title">Le Edit</h3>
+          <p class="card-desc">A dynamic social-media-style edit showcasing rhythm-driven cuts and engaging visual storytelling.</p>
+          <div class="card-tags">
+            <span class="tag">Social Media</span>
+            <span class="tag">Motion</span>
+            <span class="tag">Rhythm Cuts</span>
+          </div>
+          <a class="view-btn" href="https://drive.google.com/file/d/1yNs4V2VpoEzMLHaklNHfhTiIrrhQeNu8/view" target="_blank">View on Drive ↗</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="work-card">
+        <div class="video-wrap">
+          <div class="video-thumb" id="thumb3" onclick="loadVideo(3,'1bpfRHtOdhnyXQBmF_r0NnqVAa-Gz6io0')">
+            <div class="play-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="6,3 21,12 6,21"/></svg>
+            </div>
+          </div>
+          <iframe id="iframe3" src="" allowfullscreen style="display:none;"></iframe>
+        </div>
+        <div class="card-body">
+          <p class="card-num">03 —</p>
+          <h3 class="card-title">Teriaq</h3>
+          <p class="card-desc">A promotional video with polished transitions and a deliberate visual language built around the brand.</p>
+          <div class="card-tags">
+            <span class="tag">Promotional</span>
+            <span class="tag">Transitions</span>
+            <span class="tag">Brand Edit</span>
+          </div>
+          <a class="view-btn" href="https://drive.google.com/file/d/1bpfRHtOdhnyXQBmF_r0NnqVAa-Gz6io0/view" target="_blank">View on Drive ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <p class="section-tag">Capabilities</p>
+    <h2 class="section-title">Skills &amp; Tools</h2>
+    <div class="skills-layout">
+      <div class="skills-col">
+        <h3>Editing Skills</h3>
+        <div class="skill-item"><span>Narrative Editing</span><div class="skill-bar" style="--w:90%"></div></div>
+        <div class="skill-item"><span>Color Grading</span><div class="skill-bar" style="--w:85%"></div></div>
+        <div class="skill-item"><span>Motion Graphics</span><div class="skill-bar" style="--w:78%"></div></div>
+        <div class="skill-item"><span>Sound Design</span><div class="skill-bar" style="--w:80%"></div></div>
+        <div class="skill-item"><span>Pacing &amp; Rhythm</span><div class="skill-bar" style="--w:92%"></div></div>
+      </div>
+      <div class="skills-col">
+        <h3>Software</h3>
+        <div class="skill-item"><span>Adobe Premiere Pro</span><div class="skill-bar" style="--w:90%"></div></div>
+        <div class="skill-item"><span>DaVinci Resolve</span><div class="skill-bar" style="--w:80%"></div></div>
+        <div class="skill-item"><span>After Effects</span><div class="skill-bar" style="--w:75%"></div></div>
+        <div class="skill-item"><span>Photoshop</span><div class="skill-bar" style="--w:70%"></div></div>
+        <div class="skill-item"><span>Audition</span><div class="skill-bar" style="--w:65%"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-tag">Get in Touch</p>
+    <h2 class="section-title">Let's work together.</h2>
+    <div class="contact-inner">
+      <p>
+        Available for freelance projects, long-term collaborations, and full-time roles.
+        Whether it's a YouTube series, social campaign, or brand film — let's talk.
+      </p>
+      <a class="contact-link" href="mailto:anushapriyanthi2@gmail.com">anushapriyanthi2@gmail.com</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 A.G Sithira Lakvindu</span>
+    <span>Video Editor &mdash; Sri Lanka</span>
+  </footer>
+
+  <script>
+    function loadVideo(num, fileId) {
+      const thumb = document.getElementById('thumb' + num);
+      const iframe = document.getElementById('iframe' + num);
+      // Use Google Drive preview embed
+      iframe.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+      iframe.style.display = 'block';
+      thumb.style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
